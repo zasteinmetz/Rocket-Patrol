@@ -1,6 +1,6 @@
 // Rocket (player) prefab
 class Rocket extends Phaser.GameObjects.Sprite {
-    constructor(scene, x, y, texture, player, frame) {
+    constructor(scene, x, y, texture, p1, frame) {
         super(scene, x, y, texture, frame);
 
         // add object to the existing scene
@@ -8,25 +8,11 @@ class Rocket extends Phaser.GameObjects.Sprite {
         this.isFiring = false;      // track rocket firing status
         this.moveSpeed = 2;         // pixels per frame
         this.sfxRocket = scene.sound.add('sfx_rocket');     // add rocket sfx
-        this.p1 = player;   // sets p1 value to determine player
-        // sets key values to null so they can be determined by player
-        this.leftKey = null;
-        this.rightKey = null;
-        this.firingKey = null;
-        this.determineKeys();   // determines which keys to use
+        this.isP1 = p1;   // sets p1 value to determine player
+        this.determineKeys(scene);   // determines which keys to use
     }
 
     update() {
-       /* // p1/p2 values
-        if (this.p1 = true){
-            this.p1 = false;
-            console.log("P1 truth now " + this.p1);
-        }
-        if(!this.p1) {
-            console.log("P1 False");
-            this.p1 = "orange";
-        } */
-
         // left/right movement
         if(!this.isFiring){
             if(this.leftKey.isDown && this.x >= borderUISize + this.width) {
@@ -37,7 +23,7 @@ class Rocket extends Phaser.GameObjects.Sprite {
             }
         }
         // fire button
-        if (Phaser.Input.Keyboard.JustDown(keyF)){
+        if (Phaser.Input.Keyboard.JustDown(this.firingKey)){
             this.isFiring = true;
             this.sfxRocket.play();  // play sfx
         }
@@ -45,11 +31,10 @@ class Rocket extends Phaser.GameObjects.Sprite {
         if(this.isFiring && this.y >= borderUISize * 3){
             this.y -= this.moveSpeed;          
         }
-        // rest on miss
+        // reset on miss
         if(this.y <= borderUISize * 3){
             this.reset();
         }
-        //console.log(this.p1);
     }
     // reset rocket to ground
     reset(){
@@ -58,19 +43,17 @@ class Rocket extends Phaser.GameObjects.Sprite {
     }
 
     // determines which key is which for two players
-    determineKeys(){
-        if(this.p1 = true){
-            this.leftKey = keyLEFT;
-            this.rightKey = keyRIGHT;
-            this.firingKey = keyF;
-            console.log(this.leftKey);
-            console.log(this.rightKey);
-            console.log(this.firingKey);
+    determineKeys(scene){
+        if(!this.isP1){
+            this.leftKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+            this.rightKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+            this.firingKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F);
         }
-        else if(this.p1 = false){
-            this.leftKey = false;
-            this.rightKey = false;
-            this.firingKey = false;
+
+        else if(this.isP1 = true){
+            this.leftKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
+            this.rightKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
+            this.firingKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ZERO);
         }
     }
 }
