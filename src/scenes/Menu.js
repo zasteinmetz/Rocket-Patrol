@@ -51,6 +51,7 @@ class Menu extends Phaser.Scene{
                 gameTimer: 60000
             }
             this.sound.play('sfx_select');
+            //this.scene.start('testScene');
             this.scene.start('playScene');
         }
         if(Phaser.Input.Keyboard.JustDown(keyRIGHT)) {
