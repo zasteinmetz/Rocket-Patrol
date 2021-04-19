@@ -76,6 +76,7 @@ class Play extends Phaser.Scene {
            },
            fixedWidth: 100,
        }
+
        // Show scores and names
        this.scoreLeft = this.add.text(borderUISize + borderPadding, borderUISize + borderPadding*2, 'P2:' + this.p2Score, scoreConfig);
        this.scoreRight = this.add.text(game.config.width/2 + 4 * (borderUISize + borderPadding), borderUISize + borderPadding*2, "P1:" + this.p1Score, scoreConfig);
@@ -90,18 +91,43 @@ class Play extends Phaser.Scene {
        this.middleTimer = this.add.text(game.config.width/2 - (borderUISize + borderPadding), borderUISize + borderPadding*2, (game.settings.gameTimer/1000), scoreConfig);
 
        // use recursive function to update timer each second
-       this.timerUpdate(this);
+       this.timerUpdate(this, scoreConfig);
 
-       // reset scoreConfig
-       scoreConfig.backgroundColor = '#F3B141';
-       scoreConfig.color = '#843605';
-
+        // add and destroy warning text
+        scoreConfig.fixedWidth = 0;
+        this.warning = this.add.text(game.config.width/2, game.config.height/2 - 2 * (borderUISize + borderPadding), 'Every five seconds somebody changes', scoreConfig).setOrigin(0.5);
+        this.time.delayedCall(1500, () => {
+            this.warning.destroy();
+        }, null, this);
+       
        // 60-second play clock
-       scoreConfig.fixedWidth = 0;
        this.clock = this.time.delayedCall(game.settings.gameTimer, () => {
-           this.add.text(game.config.width/2, game.config.height/2, 'GAME OVER', scoreConfig).setOrigin(0.5);
-           this.add.text(game.config.width/2, game.config.height/2 + 64, 'Press (R) to Restart or <- for Menu', scoreConfig).setOrigin(0.5);
-           this.gameOver = true;
+           if(this.p1Score > this.p2Score){
+            this.add.text(game.config.width/2, game.config.height/2 - 32, 'Player 1', scoreConfig).setOrigin(0.5);
+            this.add.text(game.config.width/2, game.config.height/2 + 32, 'Your victory is paved in blood', scoreConfig).setOrigin(0.5);
+            if(this.p1Score > highScore){
+                highScore = this.p1Score;
+            }
+           }
+           if(this.p1Score < this.p2Score){
+            this.add.text(game.config.width/2, game.config.height/2 - 32, 'Player 2', scoreConfig).setOrigin(0.5);
+            this.add.text(game.config.width/2, game.config.height/2 + 32, 'Your victory is paved in blood', scoreConfig).setOrigin(0.5);
+            if(this.p2Score > highScore){
+                highScore = this.p2Score;
+            }
+           }
+
+           if(this.p1Score == this.p2Score){
+            this.add.text(game.config.width/2, game.config.height/2 - 32, 'Your parity displeases me', scoreConfig).setOrigin(0.5);
+            if(this.p1Score > highScore){
+                highScore = this.p1Score;
+            }
+        }
+        // reset scoreConfig
+        scoreConfig.color = '#843605';
+        scoreConfig.backgroundColor = '#F3B141';
+        this.add.text(game.config.width/2, game.config.height/2 + 96, 'Press (R) to Restart or <- for Menu', scoreConfig).setOrigin(0.5);
+        this.gameOver = true;
        }, null, this);
 
        // Speed increase at half time
@@ -212,11 +238,10 @@ class Play extends Phaser.Scene {
     }
 
     // Recursive function to switch key sets the rockets respond to
-    timedSwitch (scene){
+    timedSwitch (scene, scoreConfig){
         scene.clock = scene.time.delayedCall(5000, () => {
             if (!scene.gameOver){
-                //scene.switchText = scene.add.text(game.config.width/2, game.config.height/2, 'Switch', scoreConfig).setOrigin(0.5);
-                console.log("Switch");
+                scene.switchText = scene.add.text(game.config.width/2, game.config.height/2, 'Switch', "28px").setOrigin(0.5);
                 // Switches isP1 values
                 if(!scene.p1Rocket.isP1){
                     scene.p1Rocket.isP1 = true;
@@ -232,6 +257,9 @@ class Play extends Phaser.Scene {
                 this.p1Rocket.determineKeys(scene);
                 this.p2Rocket.determineKeys(scene);
                 scene.timedSwitch(scene);
+                scene.time.delayedCall(1000, () => {
+                    scene.switchText.destroy();
+                }, null, this);
             }
         }, null, this);
     }

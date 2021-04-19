@@ -53,7 +53,7 @@ class Rocket extends Phaser.GameObjects.Sprite {
         else if(this.isP1 = true){
             this.leftKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.LEFT);
             this.rightKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.RIGHT);
-            this.firingKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ZERO);
+            this.firingKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SHIFT);
         }
     }
 }

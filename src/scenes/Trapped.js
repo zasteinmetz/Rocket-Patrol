@@ -7,10 +7,6 @@ class Trapped extends Phaser.Scene {
         this.load.image('rocket', './assets/rocket.png');
         this.load.image('hands', './assets/Hands.png');
         this.load.image('starfield', './assets/starfield.png');
-
-        // delete when scene order established
-        this.load.audio('sfx_explosion', './assets/explosion38.wav');
-        this.load.audio('sfx_rocket', './assets/rocket_shot.wav');
     }
 
     create(){
@@ -43,7 +39,10 @@ class Trapped extends Phaser.Scene {
             this.add.text(game.config.width/4, game.config.height/2 - 4 * (borderUISize + borderPadding), 'How does it feel?', textConfig).setOrigin(0.5);
         }, null, this);
 
-        //this.scene.start('dialogueScene');
+        this.clock = this.time.delayedCall(2500, () => {
+            firstTime = false; 
+            this.scene.start('mockeryScene');
+        }, null, this);
     }
 
     update(){
